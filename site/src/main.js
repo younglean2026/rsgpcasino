@@ -323,8 +323,15 @@ function myCard(g, i, now) {
       break;
     case STATUS.ROLLING:
       status = "Chainlink is drawing the side…";
-      if (now - g.updatedAt > STUCK_SECONDS)
+      if (now - g.updatedAt >= STUCK_SECONDS) {
+        status = "Chainlink never answered. You can refund both players now.";
         action = `<button class="btn btn-ghost" data-act="refund" data-id="${g.id}">Refund both</button>`;
+      } else if (now - g.updatedAt > 10 * 60) {
+        const left = g.updatedAt + STUCK_SECONDS - now;
+        const h = Math.floor(left / 3600);
+        const m = Math.floor((left % 3600) / 60);
+        status = `Taking longer than usual. If Chainlink doesn't answer, a refund unlocks in ${h}h ${m}m.`;
+      }
       break;
     case STATUS.DECIDED:
       if (same(winnerOf(g), me)) {
