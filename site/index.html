@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#2b1d14" />
+    <title>RSGP Casino</title>
+    <meta name="description" content="PvP coinflip in $RSGP on Base. Pick a side, winner takes 100%. Randomness by Chainlink VRF." />
+    <link rel="icon" type="image/png" href="/rsgp.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Permanent+Marker&family=Special+Elite&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/src/style.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="#" aria-label="RSGP Casino home">
+        <img src="/rsgp.png" alt="" width="36" height="36" />
+        <span>RSGP CASINO</span>
+      </a>
+      <div class="wallet">
+        <span id="netTag" class="net-tag" hidden></span>
+        <button id="connectBtn" class="btn btn-sticker">Connect Rabby</button>
+      </div>
+    </header>
+
+    <main>
+      <!-- HERO: o quadro de conspiração -->
+      <section class="board" id="board" aria-labelledby="heroTitle">
+        <svg class="strings" id="strings" aria-hidden="true"></svg>
+
+        <div class="clipping clip-0 side-0" id="clip0">
+          <span class="pin"></span>
+          <strong data-side-name="0">DIRE</strong>
+          <em data-side-tag="0">the rot below</em>
+          <span class="tally"><b id="wins0">0</b> <span id="winsLabel0">wins</span></span>
+        </div>
+
+        <div class="coin-stage" id="coinStage">
+          <span class="pin"></span>
+          <img class="coin" id="heroCoin" src="/rsgp.png" alt="RSGP coin" width="64" height="64" />
+        </div>
+
+        <div class="clipping clip-1 side-1" id="clip1">
+          <span class="pin"></span>
+          <strong data-side-name="1">VICEROYS</strong>
+          <em data-side-tag="1">the crown above</em>
+          <span class="tally"><b id="wins1">0</b> <span id="winsLabel1">wins</span></span>
+        </div>
+
+        <h1 id="heroTitle" class="hero-title">Pick a side.<br />Winner takes the whole pot.</h1>
+
+        <p class="scrawl scrawl-a">no house. no edge.<br />the house takes 0%</p>
+        <p class="scrawl scrawl-b">chainlink VRF picks<br />— not me, not you</p>
+        <p class="scrawl scrawl-c"><span id="potTotal">0</span> RSGP<br />on the table rn</p>
+      </section>
+
+      <!-- MESA: criar aposta + carteira -->
+      <section class="desk">
+        <article class="note note-form" aria-labelledby="newBetTitle">
+          <span class="tape"></span>
+          <h2 id="newBetTitle">Open a new bet</h2>
+
+          <label class="field">
+            <span>How much RSGP</span>
+            <div class="amount-row">
+              <input id="amountInput" type="text" inputmode="decimal" placeholder="10000" autocomplete="off" />
+              <button id="maxBtn" class="btn btn-ghost" type="button">max</button>
+            </div>
+            <div class="quick" id="quickAmounts"></div>
+          </label>
+
+          <fieldset class="side-pick">
+            <legend>Your side</legend>
+            <label class="stamp side-0">
+              <input type="radio" name="side" value="0" checked />
+              <span data-side-name="0">DIRE</span>
+            </label>
+            <label class="stamp side-1">
+              <input type="radio" name="side" value="1" />
+              <span data-side-name="1">VICEROYS</span>
+            </label>
+          </fieldset>
+
+          <button id="createBtn" class="btn btn-primary" type="button">Open bet</button>
+          <p class="hint" id="createHint">Your RSGP stays in the contract until someone takes the other side. Cancel any time before that.</p>
+        </article>
+
+        <article class="note note-dossier" aria-labelledby="dossierTitle">
+          <span class="tape tape-right"></span>
+          <h2 id="dossierTitle">Your file</h2>
+          <dl class="dossier">
+            <div><dt>Wallet</dt><dd id="meAddr">not connected</dd></div>
+            <div><dt>RSGP</dt><dd id="meRsgp">—</dd></div>
+            <div><dt>ETH (gas)</dt><dd id="meEth">—</dd></div>
+            <div><dt>Record</dt><dd id="meRecord">—</dd></div>
+            <div><dt>VRF fee now</dt><dd id="vrfFee">—</dd></div>
+          </dl>
+          <p class="hint">Whoever takes a bet pays the Chainlink fee in ETH. On Base it's usually a few cents.</p>
+        </article>
+      </section>
+
+      <section class="pinboard" aria-labelledby="openTitle">
+        <h2 id="openTitle" class="board-title">Open bets</h2>
+        <div id="openList" class="cards"></div>
+      </section>
+
+      <section class="pinboard" aria-labelledby="mineTitle">
+        <h2 id="mineTitle" class="board-title">Your bets</h2>
+        <div id="mineList" class="cards"></div>
+      </section>
+
+      <section class="pinboard" aria-labelledby="feedTitle">
+        <h2 id="feedTitle" class="board-title">Last flips</h2>
+        <ol id="feedList" class="feed"></ol>
+      </section>
+
+      <section class="note note-how" aria-labelledby="howTitle">
+        <span class="tape"></span>
+        <h2 id="howTitle">How it works</h2>
+        <ol class="steps">
+          <li>Someone opens a bet: picks an amount and a side. Their RSGP goes into the contract.</li>
+          <li>You take the other side with the same amount and pay the VRF fee in ETH.</li>
+          <li>Chainlink VRF draws the winning side, usually in under a minute.</li>
+          <li>The winner claims 100% of the pot. If VRF never answers, both get refunded after 24h.</li>
+        </ol>
+      </section>
+    </main>
+
+    <footer class="foot">
+      <p>
+        Community-made. Not affiliated with Cambria or its team. Only bet what you can lose, and check whether
+        betting is legal where you live.
+      </p>
+      <p class="foot-links">
+        <a id="contractLink" href="#" target="_blank" rel="noopener">Contract</a>
+        <a id="tokenLink" href="#" target="_blank" rel="noopener">$RSGP token</a>
+      </p>
+    </footer>
+
+    <!-- Revelação do resultado -->
+    <div class="flip-overlay" id="flipOverlay" hidden>
+      <div class="flip-card" role="dialog" aria-modal="true" aria-labelledby="flipTitle">
+        <img class="coin coin-spin" id="flipCoin" src="/rsgp.png" alt="" width="64" height="64" />
+        <h2 id="flipTitle">The VRF is deciding…</h2>
+        <p id="flipText">Waiting for Chainlink to deliver the random number.</p>
+        <div class="flip-actions">
+          <button id="flipAction" class="btn btn-primary" hidden>Claim</button>
+          <button id="flipClose" class="btn btn-ghost">Close</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>

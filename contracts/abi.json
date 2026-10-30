@@ -1,0 +1,628 @@
+[
+ {
+  "inputs": [
+   {
+    "internalType": "address",
+    "name": "wrapper",
+    "type": "address"
+   },
+   {
+    "internalType": "address",
+    "name": "token_",
+    "type": "address"
+   },
+   {
+    "internalType": "uint32",
+    "name": "callbackGasLimit_",
+    "type": "uint32"
+   },
+   {
+    "internalType": "uint256",
+    "name": "minBet_",
+    "type": "uint256"
+   }
+  ],
+  "stateMutability": "nonpayable",
+  "type": "constructor"
+ },
+ {
+  "inputs": [],
+  "name": "BadAmount",
+  "type": "error"
+ },
+ {
+  "inputs": [],
+  "name": "BadSide",
+  "type": "error"
+ },
+ {
+  "inputs": [],
+  "name": "NotCreator",
+  "type": "error"
+ },
+ {
+  "inputs": [],
+  "name": "NotFound",
+  "type": "error"
+ },
+ {
+  "inputs": [
+   {
+    "internalType": "address",
+    "name": "have",
+    "type": "address"
+   },
+   {
+    "internalType": "address",
+    "name": "want",
+    "type": "address"
+   }
+  ],
+  "name": "OnlyVRFWrapperCanFulfill",
+  "type": "error"
+ },
+ {
+  "inputs": [],
+  "name": "ReentrancyGuardReentrantCall",
+  "type": "error"
+ },
+ {
+  "inputs": [],
+  "name": "RefundFailed",
+  "type": "error"
+ },
+ {
+  "inputs": [
+   {
+    "internalType": "address",
+    "name": "token",
+    "type": "address"
+   }
+  ],
+  "name": "SafeERC20FailedOperation",
+  "type": "error"
+ },
+ {
+  "inputs": [],
+  "name": "SelfPlay",
+  "type": "error"
+ },
+ {
+  "inputs": [],
+  "name": "TooEarly",
+  "type": "error"
+ },
+ {
+  "inputs": [
+   {
+    "internalType": "uint256",
+    "name": "required",
+    "type": "uint256"
+   }
+  ],
+  "name": "VrfFeeTooLow",
+  "type": "error"
+ },
+ {
+  "inputs": [],
+  "name": "WrongStatus",
+  "type": "error"
+ },
+ {
+  "anonymous": false,
+  "inputs": [
+   {
+    "indexed": true,
+    "internalType": "uint256",
+    "name": "id",
+    "type": "uint256"
+   }
+  ],
+  "name": "GameCancelled",
+  "type": "event"
+ },
+ {
+  "anonymous": false,
+  "inputs": [
+   {
+    "indexed": true,
+    "internalType": "uint256",
+    "name": "id",
+    "type": "uint256"
+   },
+   {
+    "indexed": true,
+    "internalType": "address",
+    "name": "creator",
+    "type": "address"
+   },
+   {
+    "indexed": false,
+    "internalType": "uint256",
+    "name": "amount",
+    "type": "uint256"
+   },
+   {
+    "indexed": false,
+    "internalType": "uint8",
+    "name": "side",
+    "type": "uint8"
+   }
+  ],
+  "name": "GameCreated",
+  "type": "event"
+ },
+ {
+  "anonymous": false,
+  "inputs": [
+   {
+    "indexed": true,
+    "internalType": "uint256",
+    "name": "id",
+    "type": "uint256"
+   },
+   {
+    "indexed": false,
+    "internalType": "uint8",
+    "name": "winningSide",
+    "type": "uint8"
+   },
+   {
+    "indexed": true,
+    "internalType": "address",
+    "name": "winner",
+    "type": "address"
+   }
+  ],
+  "name": "GameDecided",
+  "type": "event"
+ },
+ {
+  "anonymous": false,
+  "inputs": [
+   {
+    "indexed": true,
+    "internalType": "uint256",
+    "name": "id",
+    "type": "uint256"
+   },
+   {
+    "indexed": true,
+    "internalType": "address",
+    "name": "joiner",
+    "type": "address"
+   },
+   {
+    "indexed": false,
+    "internalType": "uint256",
+    "name": "requestId",
+    "type": "uint256"
+   },
+   {
+    "indexed": false,
+    "internalType": "uint256",
+    "name": "vrfFee",
+    "type": "uint256"
+   }
+  ],
+  "name": "GameJoined",
+  "type": "event"
+ },
+ {
+  "anonymous": false,
+  "inputs": [
+   {
+    "indexed": true,
+    "internalType": "uint256",
+    "name": "id",
+    "type": "uint256"
+   },
+   {
+    "indexed": true,
+    "internalType": "address",
+    "name": "winner",
+    "type": "address"
+   },
+   {
+    "indexed": false,
+    "internalType": "uint256",
+    "name": "payout",
+    "type": "uint256"
+   }
+  ],
+  "name": "GamePaid",
+  "type": "event"
+ },
+ {
+  "anonymous": false,
+  "inputs": [
+   {
+    "indexed": true,
+    "internalType": "uint256",
+    "name": "id",
+    "type": "uint256"
+   }
+  ],
+  "name": "GameRefunded",
+  "type": "event"
+ },
+ {
+  "inputs": [],
+  "name": "NUM_WORDS",
+  "outputs": [
+   {
+    "internalType": "uint32",
+    "name": "",
+    "type": "uint32"
+   }
+  ],
+  "stateMutability": "view",
+  "type": "function"
+ },
+ {
+  "inputs": [],
+  "name": "REQUEST_CONFIRMATIONS",
+  "outputs": [
+   {
+    "internalType": "uint16",
+    "name": "",
+    "type": "uint16"
+   }
+  ],
+  "stateMutability": "view",
+  "type": "function"
+ },
+ {
+  "inputs": [],
+  "name": "STUCK_TIMEOUT",
+  "outputs": [
+   {
+    "internalType": "uint256",
+    "name": "",
+    "type": "uint256"
+   }
+  ],
+  "stateMutability": "view",
+  "type": "function"
+ },
+ {
+  "inputs": [],
+  "name": "callbackGasLimit",
+  "outputs": [
+   {
+    "internalType": "uint32",
+    "name": "",
+    "type": "uint32"
+   }
+  ],
+  "stateMutability": "view",
+  "type": "function"
+ },
+ {
+  "inputs": [
+   {
+    "internalType": "uint256",
+    "name": "id",
+    "type": "uint256"
+   }
+  ],
+  "name": "cancelGame",
+  "outputs": [],
+  "stateMutability": "nonpayable",
+  "type": "function"
+ },
+ {
+  "inputs": [
+   {
+    "internalType": "uint256",
+    "name": "amount",
+    "type": "uint256"
+   },
+   {
+    "internalType": "uint8",
+    "name": "side",
+    "type": "uint8"
+   }
+  ],
+  "name": "createGame",
+  "outputs": [
+   {
+    "internalType": "uint256",
+    "name": "id",
+    "type": "uint256"
+   }
+  ],
+  "stateMutability": "nonpayable",
+  "type": "function"
+ },
+ {
+  "inputs": [],
+  "name": "gamesCount",
+  "outputs": [
+   {
+    "internalType": "uint256",
+    "name": "",
+    "type": "uint256"
+   }
+  ],
+  "stateMutability": "view",
+  "type": "function"
+ },
+ {
+  "inputs": [],
+  "name": "getBalance",
+  "outputs": [
+   {
+    "internalType": "uint256",
+    "name": "",
+    "type": "uint256"
+   }
+  ],
+  "stateMutability": "view",
+  "type": "function"
+ },
+ {
+  "inputs": [
+   {
+    "internalType": "uint256",
+    "name": "id",
+    "type": "uint256"
+   }
+  ],
+  "name": "getGame",
+  "outputs": [
+   {
+    "components": [
+     {
+      "internalType": "address",
+      "name": "creator",
+      "type": "address"
+     },
+     {
+      "internalType": "uint96",
+      "name": "amount",
+      "type": "uint96"
+     },
+     {
+      "internalType": "address",
+      "name": "joiner",
+      "type": "address"
+     },
+     {
+      "internalType": "uint8",
+      "name": "creatorSide",
+      "type": "uint8"
+     },
+     {
+      "internalType": "enum RSGPCasino.Status",
+      "name": "status",
+      "type": "uint8"
+     },
+     {
+      "internalType": "uint8",
+      "name": "winningSide",
+      "type": "uint8"
+     },
+     {
+      "internalType": "uint40",
+      "name": "updatedAt",
+      "type": "uint40"
+     }
+    ],
+    "internalType": "struct RSGPCasino.Game",
+    "name": "",
+    "type": "tuple"
+   }
+  ],
+  "stateMutability": "view",
+  "type": "function"
+ },
+ {
+  "inputs": [
+   {
+    "internalType": "uint256",
+    "name": "start",
+    "type": "uint256"
+   },
+   {
+    "internalType": "uint256",
+    "name": "count",
+    "type": "uint256"
+   }
+  ],
+  "name": "getGames",
+  "outputs": [
+   {
+    "components": [
+     {
+      "internalType": "address",
+      "name": "creator",
+      "type": "address"
+     },
+     {
+      "internalType": "uint96",
+      "name": "amount",
+      "type": "uint96"
+     },
+     {
+      "internalType": "address",
+      "name": "joiner",
+      "type": "address"
+     },
+     {
+      "internalType": "uint8",
+      "name": "creatorSide",
+      "type": "uint8"
+     },
+     {
+      "internalType": "enum RSGPCasino.Status",
+      "name": "status",
+      "type": "uint8"
+     },
+     {
+      "internalType": "uint8",
+      "name": "winningSide",
+      "type": "uint8"
+     },
+     {
+      "internalType": "uint40",
+      "name": "updatedAt",
+      "type": "uint40"
+     }
+    ],
+    "internalType": "struct RSGPCasino.Game[]",
+    "name": "out",
+    "type": "tuple[]"
+   }
+  ],
+  "stateMutability": "view",
+  "type": "function"
+ },
+ {
+  "inputs": [],
+  "name": "getLinkToken",
+  "outputs": [
+   {
+    "internalType": "contract LinkTokenInterface",
+    "name": "",
+    "type": "address"
+   }
+  ],
+  "stateMutability": "view",
+  "type": "function"
+ },
+ {
+  "inputs": [],
+  "name": "i_vrfV2PlusWrapper",
+  "outputs": [
+   {
+    "internalType": "contract IVRFV2PlusWrapper",
+    "name": "",
+    "type": "address"
+   }
+  ],
+  "stateMutability": "view",
+  "type": "function"
+ },
+ {
+  "inputs": [
+   {
+    "internalType": "uint256",
+    "name": "id",
+    "type": "uint256"
+   }
+  ],
+  "name": "joinGame",
+  "outputs": [],
+  "stateMutability": "payable",
+  "type": "function"
+ },
+ {
+  "inputs": [],
+  "name": "minBet",
+  "outputs": [
+   {
+    "internalType": "uint256",
+    "name": "",
+    "type": "uint256"
+   }
+  ],
+  "stateMutability": "view",
+  "type": "function"
+ },
+ {
+  "inputs": [
+   {
+    "internalType": "uint256",
+    "name": "gasPriceWei",
+    "type": "uint256"
+   }
+  ],
+  "name": "quoteVrfFee",
+  "outputs": [
+   {
+    "internalType": "uint256",
+    "name": "",
+    "type": "uint256"
+   }
+  ],
+  "stateMutability": "view",
+  "type": "function"
+ },
+ {
+  "inputs": [
+   {
+    "internalType": "uint256",
+    "name": "_requestId",
+    "type": "uint256"
+   },
+   {
+    "internalType": "uint256[]",
+    "name": "_randomWords",
+    "type": "uint256[]"
+   }
+  ],
+  "name": "rawFulfillRandomWords",
+  "outputs": [],
+  "stateMutability": "nonpayable",
+  "type": "function"
+ },
+ {
+  "inputs": [
+   {
+    "internalType": "uint256",
+    "name": "id",
+    "type": "uint256"
+   }
+  ],
+  "name": "refundStuck",
+  "outputs": [],
+  "stateMutability": "nonpayable",
+  "type": "function"
+ },
+ {
+  "inputs": [
+   {
+    "internalType": "uint256",
+    "name": "",
+    "type": "uint256"
+   }
+  ],
+  "name": "requestToGame",
+  "outputs": [
+   {
+    "internalType": "uint256",
+    "name": "",
+    "type": "uint256"
+   }
+  ],
+  "stateMutability": "view",
+  "type": "function"
+ },
+ {
+  "inputs": [
+   {
+    "internalType": "uint256",
+    "name": "id",
+    "type": "uint256"
+   }
+  ],
+  "name": "settle",
+  "outputs": [],
+  "stateMutability": "nonpayable",
+  "type": "function"
+ },
+ {
+  "inputs": [],
+  "name": "token",
+  "outputs": [
+   {
+    "internalType": "contract IERC20",
+    "name": "",
+    "type": "address"
+   }
+  ],
+  "stateMutability": "view",
+  "type": "function"
+ }
+]

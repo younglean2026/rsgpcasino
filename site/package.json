@@ -1,0 +1,17 @@
+{
+  "name": "rsgp-casino-site",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host",
+    "build": "vite build",
+    "preview": "vite preview --host"
+  },
+  "dependencies": {
+    "viem": "^2.57.13"
+  },
+  "devDependencies": {
+    "vite": "^6.4.5"
+  }
+}
