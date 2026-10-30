@@ -17,7 +17,7 @@ export const CONFIG = {
 
   // Nomes dos dois lados (troque à vontade, o contrato só conhece 0 e 1)
   SIDES: [
-    { name: "DIRE", tagline: "the rot below", className: "side-0" },
+    { name: "CITIZEN", tagline: "the people below", className: "side-0" },
     { name: "VICEROYS", tagline: "the crown above", className: "side-1" },
   ],
 

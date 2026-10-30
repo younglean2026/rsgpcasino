@@ -1,6 +1,6 @@
 # RSGP CASINO
 
-Apostas PvP 1x1 em **$RSGP** na **Base**. Um jogador abre a aposta escolhendo valor e lado (DIRE ou VICEROYS), outro entra no lado oposto com o mesmo valor, o **Chainlink VRF v2.5** sorteia o lado vencedor e quem ganhar leva **100% do pote**.
+Apostas PvP 1x1 em **$RSGP** na **Base**. Um jogador abre a aposta escolhendo valor e lado (CITIZEN ou VICEROYS), outro entra no lado oposto com o mesmo valor, o **Chainlink VRF v2.5** sorteia o lado vencedor e quem ganhar leva **100% do pote**.
 
 ```
 rsgp-casino/
