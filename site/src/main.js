@@ -417,22 +417,40 @@ async function send(label, request) {
   return rc;
 }
 
-async function ensureAllowance(amount) {
-  const allowance = await publicClient.readContract({
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+const readAllowance = () =>
+  publicClient.readContract({
     address: TOKEN,
     abi: ERC20_ABI,
     functionName: "allowance",
     args: [state.account, CASINO],
   });
-  if (allowance >= amount) return;
-  const { request } = await publicClient.simulateContract({
-    account: state.account,
+
+// O RPC público da Base reparte as chamadas entre vários nós, e alguns ficam
+// 1–2 blocos atrás. Logo depois do Approve a simulação pode cair num nó que
+// ainda não viu a aprovação, então tentamos de novo por alguns segundos.
+async function simulate(params, tries = 8) {
+  for (let i = 1; ; i++) {
+    try {
+      return await publicClient.simulateContract({ account: state.account, ...params });
+    } catch (e) {
+      if (i >= tries || !/allowance/i.test(e?.message || "")) throw e;
+      await sleep(1500);
+    }
+  }
+}
+
+async function ensureAllowance(amount) {
+  if ((await readAllowance()) >= amount) return;
+  const { request } = await simulate({
     address: TOKEN,
     abi: ERC20_ABI,
     functionName: "approve",
     args: [CASINO, amount],
   });
   await send("Approve RSGP", request);
+  for (let i = 0; i < 15 && (await readAllowance()) < amount; i++) await sleep(1000);
 }
 
 async function guard(fn) {
@@ -465,8 +483,7 @@ async function createBet() {
     const side = Number(document.querySelector('input[name="side"]:checked').value);
 
     await ensureAllowance(amount);
-    const { request } = await publicClient.simulateContract({
-      account: state.account,
+    const { request } = await simulate({
       address: CASINO,
       abi: CASINO_ABI,
       functionName: "createGame",
@@ -486,8 +503,7 @@ async function act(kind, id) {
       await ensureAllowance(g.amount);
       const fee = await quoteFee();
       const value = (fee * BigInt(Math.round(CONFIG.VRF_FEE_BUFFER * 100))) / 100n;
-      const { request } = await publicClient.simulateContract({
-        account: state.account,
+      const { request } = await simulate({
         address: CASINO,
         abi: CASINO_ABI,
         functionName: "joinGame",
