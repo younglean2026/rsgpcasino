@@ -563,6 +563,21 @@ function niceError(e) {
   return e?.message || "Something failed.";
 }
 
+// ───────────────────────── copiar contrato do token ─────────────────────────
+$("copyTokenBtn").onclick = async () => {
+  try {
+    await navigator.clipboard.writeText(TOKEN);
+  } catch {
+    const ta = document.createElement("textarea");
+    ta.value = TOKEN;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand("copy");
+    ta.remove();
+  }
+  toast(`$RSGP contract copied: ${TOKEN.slice(0, 6)}…${TOKEN.slice(-4)}`, "ok", 3000);
+};
+
 // ───────────────────────── toast ─────────────────────────
 let toastTimer;
 function toast(msg, kind = "info", ms = 5000, hash) {
